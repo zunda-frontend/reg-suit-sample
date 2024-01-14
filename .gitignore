@@ -1,0 +1,10 @@
+.env
+node_modules
+
+# storybook
+__storybook__
+__screenshots__
+__screenshots-received__
+
+# reg-suit
+.reg

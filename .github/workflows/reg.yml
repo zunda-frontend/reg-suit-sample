@@ -1,0 +1,80 @@
+name: reg
+
+on: pull_request
+
+env:
+  REG_SUIT_CLIENT_ID: ${{secrets.REG_SUIT_CLIENT_ID}}
+
+jobs:
+  run-reg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
+      - name: Use Node.js v20
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.x"
+          cache: "pnpm"
+      - name: package install
+        run: |
+          pnpm i --frozen-lockfile
+      - name: install browser
+        run: pnpx puppeteer browsers install chrome
+      - name: build storybook
+        run: pnpm build-storybook
+      - name: run screenshots
+        run: pnpm ci:screenshots
+      - name: make directories
+        run: mkdir __screenshots-received__/
+      - name: move files
+        run: mv -f __screenshots__/* __screenshots-received__/
+      - name: workaround for detached HEAD
+        run: |
+          git checkout ${{github.base_ref}} || git checkout -b ${{github.base_ref}} && git pull
+      - name: package install
+        run: |
+          pnpm i --frozen-lockfile
+      - name: build storybook
+        run: pnpm build-storybook
+      - name: run screenshots
+        run: pnpm ci:screenshots2
+      - name: make directories
+        run: mkdir .reg && cd .reg && mkdir expected && cd ../
+      - name: move files
+        run: mv -f __screenshots__/* .reg/expected/
+      - name: workaround for detached HEAD
+        run: |
+          git checkout ${{github.head_ref}} || git checkout -b ${{github.head_ref}} && git pull
+      - name: run reg-suit
+        run: |
+          pnpm vrt
+
+      - name: deploy report to github page
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .reg/
+          destination_dir: ${{ github.head_ref  }}
+
+      - name: find comment
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          issue-number: ${{ github.event.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: reg-suit report
+
+      - name: upsert comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.number }}
+          body: |
+            reg-suit report
+            https://zunda-frontend.github.io/reg-suit-sample/${{github.head_ref}}
+          edit-mode: replace
