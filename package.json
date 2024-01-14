@@ -1,0 +1,44 @@
+{
+  "name": "reg-suit-sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build -o __storybook__",
+    "screenshots": "storycap --server-cmd \"storybook dev -p 9009\" \"http://localhost:9009\"",
+    "ci:screenshots": "storycap --serverTimeout 60000 --captureTimeout 10000 --serverCmd 'pnpx http-server __storybook__ --ci -p 9009' http://localhost:9009",
+    "ci:screenshots2": "storycap --serverTimeout 60000 --captureTimeout 10000 --serverCmd 'pnpx http-server __storybook__ --ci -p 9001' http://localhost:9001",
+    "vrt": "reg-suit run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zawa1205/reg-suit-sample.git"
+  },
+  "author": "zawa1205",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zawa1205/reg-suit-sample/issues"
+  },
+  "homepage": "https://github.com/zawa1205/reg-suit-sample#readme",
+  "devDependencies": {
+    "@storybook/addon-essentials": "^7.6.8",
+    "@storybook/addon-interactions": "^7.6.8",
+    "@storybook/addon-links": "^7.6.8",
+    "@storybook/addon-onboarding": "^1.0.10",
+    "@storybook/blocks": "^7.6.8",
+    "@storybook/react": "^7.6.8",
+    "@storybook/react-vite": "^7.6.8",
+    "@storybook/test": "^7.6.8",
+    "prop-types": "^15.8.1",
+    "puppeteer": "^21.7.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "reg-keygen-git-hash-plugin": "^0.12.2",
+    "reg-notify-github-plugin": "^0.12.2",
+    "reg-suit": "^0.12.2",
+    "storybook": "^7.6.8",
+    "storycap": "^4.2.0"
+  }
+}
